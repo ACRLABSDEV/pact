@@ -198,6 +198,20 @@
             padding: 12px 16px;
             border-radius: 6px;
             margin-top: 24px;
+            text-decoration: none;
+            transition: border-color 0.15s ease;
+        }
+        
+        .contract:hover {
+            border-color: var(--green);
+            text-decoration: none;
+        }
+        
+        .contract-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--dim);
         }
         
         .contract-addr { color: var(--text); font-size: 12px; }
@@ -368,10 +382,11 @@
             </div>
         </div>
         
-        <div class="contract">
+        <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" target="_blank" rel="noopener" class="contract">
+            <span class="contract-label">Program ID</span>
             <span class="contract-addr">S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM</span>
             <span class="badge">devnet</span>
-        </div>
+        </a>
         
         <section>
             <h2>How it works</h2>
@@ -432,7 +447,9 @@
     
     <footer>
         <div class="container">
-            Colosseum AI Agent Hackathon 2026
+            <a href="https://github.com/ACRLABSDEV/pact" target="_blank" rel="noopener">GitHub</a>
+            <span style="margin: 0 12px; color: var(--border);">·</span>
+            <a href="https://colosseum.com/agent-hackathon" target="_blank" rel="noopener">Colosseum AI Agent Hackathon 2026</a>
         </div>
     </footer>
 </body>
