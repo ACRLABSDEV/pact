@@ -11,6 +11,7 @@
             --surface: #111;
             --surface-2: #161616;
             --border: #222;
+            --border-hover: #444;
             --text: #e5e5e5;
             --dim: #666;
             --green: #4ade80;
@@ -29,8 +30,15 @@
             font-size: 14px;
         }
         
-        a { color: var(--green); text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        a { 
+            color: var(--green); 
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+        a:hover { 
+            color: #6ee7a0;
+            text-decoration: underline; 
+        }
         
         .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
         
@@ -46,14 +54,22 @@
             align-items: center;
         }
         
-        .logo { font-weight: 600; font-size: 16px; color: var(--green); }
+        .logo { 
+            font-weight: 600; 
+            font-size: 16px; 
+            color: var(--green);
+        }
         
         nav a {
             color: var(--dim);
             margin-left: 24px;
             font-size: 13px;
+            transition: color 0.15s ease;
         }
-        nav a:hover { color: var(--text); }
+        nav a:hover { 
+            color: var(--text); 
+            text-decoration: none;
+        }
         
         /* Hero */
         .hero {
@@ -235,31 +251,59 @@
         .f { color: var(--blue); }
         .c { color: var(--dim); }
         
-        /* Grid */
-        .grid {
+        /* Resource Cards */
+        .resources {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
         }
         
-        .grid-item {
+        .resource-card {
+            display: block;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 6px;
             padding: 16px;
+            color: var(--text);
+            text-decoration: none;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
         }
         
-        .grid-item:hover { border-color: var(--green); }
+        .resource-card:hover {
+            border-color: var(--green);
+            background: var(--surface-2);
+            text-decoration: none;
+        }
         
-        .grid-label {
+        .resource-label {
             font-size: 11px;
             color: var(--dim);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 4px;
+            transition: color 0.15s ease;
         }
         
-        .grid-value { font-size: 13px; }
+        .resource-card:hover .resource-label {
+            color: var(--green);
+        }
+        
+        .resource-value { 
+            font-size: 13px;
+            color: var(--text);
+        }
+        
+        .resource-arrow {
+            float: right;
+            color: var(--dim);
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+        
+        .resource-card:hover .resource-arrow {
+            transform: translateX(3px);
+            color: var(--green);
+        }
         
         /* Footer */
         footer {
@@ -271,7 +315,7 @@
         }
         
         @media (max-width: 640px) {
-            .grid { grid-template-columns: 1fr; }
+            .resources { grid-template-columns: 1fr; }
             .contract { flex-direction: column; align-items: flex-start; gap: 8px; }
         }
     </style>
@@ -282,8 +326,8 @@
             <span class="logo">pact</span>
             <nav>
                 <a href="SKILL.md">skill</a>
-                <a href="https://github.com/ACRLABSDEV/pact">source</a>
-                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet">explorer</a>
+                <a href="https://github.com/ACRLABSDEV/pact" target="_blank" rel="noopener">source</a>
+                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" target="_blank" rel="noopener">explorer</a>
             </nav>
         </div>
     </header>
@@ -361,22 +405,26 @@
         
         <section>
             <h2>Resources</h2>
-            <div class="grid">
-                <a href="SKILL.md" class="grid-item">
-                    <div class="grid-label">Skill File</div>
-                    <div class="grid-value">Full API reference for agents</div>
+            <div class="resources">
+                <a href="SKILL.md" class="resource-card">
+                    <span class="resource-arrow">→</span>
+                    <div class="resource-label">Skill File</div>
+                    <div class="resource-value">Full API reference for agents</div>
                 </a>
-                <a href="https://github.com/ACRLABSDEV/pact" class="grid-item">
-                    <div class="grid-label">Source Code</div>
-                    <div class="grid-value">Pinocchio program + TS client</div>
+                <a href="https://github.com/ACRLABSDEV/pact" target="_blank" rel="noopener" class="resource-card">
+                    <span class="resource-arrow">→</span>
+                    <div class="resource-label">Source Code</div>
+                    <div class="resource-value">Pinocchio program + TS client</div>
                 </a>
-                <a href="https://github.com/ACRLABSDEV/pact/blob/main/docs/INTEGRATION.md" class="grid-item">
-                    <div class="grid-label">Integration Guide</div>
-                    <div class="grid-value">Step-by-step walkthrough</div>
+                <a href="https://github.com/ACRLABSDEV/pact/blob/main/docs/INTEGRATION.md" target="_blank" rel="noopener" class="resource-card">
+                    <span class="resource-arrow">→</span>
+                    <div class="resource-label">Integration Guide</div>
+                    <div class="resource-value">Step-by-step walkthrough</div>
                 </a>
-                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" class="grid-item">
-                    <div class="grid-label">On-Chain</div>
-                    <div class="grid-value">View on Solana Explorer</div>
+                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" target="_blank" rel="noopener" class="resource-card">
+                    <span class="resource-arrow">→</span>
+                    <div class="resource-label">On-Chain</div>
+                    <div class="resource-value">View on Solana Explorer</div>
                 </a>
             </div>
         </section>
