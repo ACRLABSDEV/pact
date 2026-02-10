@@ -16,6 +16,7 @@
             --green: #4ade80;
             --blue: #60a5fa;
             --purple: #c084fc;
+            --yellow: #fbbf24;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -45,11 +46,7 @@
             align-items: center;
         }
         
-        .logo { 
-            font-weight: 600; 
-            font-size: 16px; 
-            color: var(--green);
-        }
+        .logo { font-weight: 600; font-size: 16px; color: var(--green); }
         
         nav a {
             color: var(--dim);
@@ -57,43 +54,6 @@
             font-size: 13px;
         }
         nav a:hover { color: var(--text); }
-        
-        /* Terminal */
-        .terminal {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 40px 0;
-        }
-        
-        .terminal-bar {
-            background: var(--surface-2);
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            gap: 6px;
-        }
-        
-        .terminal-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--border);
-        }
-        
-        .terminal-body {
-            padding: 20px;
-        }
-        
-        .terminal-line {
-            margin-bottom: 8px;
-        }
-        
-        .prompt { color: var(--green); }
-        .cmd { color: var(--text); }
-        .comment { color: var(--dim); }
-        .output { color: var(--dim); margin-left: 0; }
         
         /* Hero */
         .hero {
@@ -111,8 +71,105 @@
             color: var(--dim);
             font-size: 15px;
             max-width: 520px;
-            margin-bottom: 8px;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        /* Terminal */
+        .terminal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 32px 0;
+        }
+        
+        .terminal-bar {
+            background: var(--surface-2);
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27ca40; }
+        
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            color: var(--dim);
+            font-size: 12px;
+        }
+        
+        .terminal-body {
+            padding: 20px;
+            min-height: 320px;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        
+        .line {
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+            margin-bottom: 4px;
+        }
+        
+        .prompt { color: var(--green); }
+        .cmd { color: var(--text); }
+        .comment { color: var(--dim); font-style: italic; }
+        .output { color: var(--dim); }
+        .success { color: var(--green); }
+        .info { color: var(--blue); }
+        .warn { color: var(--yellow); }
+        .key { color: var(--purple); }
+        .val { color: var(--green); }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .line:nth-child(1) { animation-delay: 0.2s; }
+        .line:nth-child(2) { animation-delay: 0.6s; }
+        .line:nth-child(3) { animation-delay: 1.0s; }
+        .line:nth-child(4) { animation-delay: 1.4s; }
+        .line:nth-child(5) { animation-delay: 1.8s; }
+        .line:nth-child(6) { animation-delay: 2.2s; }
+        .line:nth-child(7) { animation-delay: 2.6s; }
+        .line:nth-child(8) { animation-delay: 3.0s; }
+        .line:nth-child(9) { animation-delay: 3.4s; }
+        .line:nth-child(10) { animation-delay: 3.8s; }
+        .line:nth-child(11) { animation-delay: 4.2s; }
+        .line:nth-child(12) { animation-delay: 4.6s; }
+        .line:nth-child(13) { animation-delay: 5.0s; }
+        .line:nth-child(14) { animation-delay: 5.4s; }
+        .line:nth-child(15) { animation-delay: 5.8s; }
+        .line:nth-child(16) { animation-delay: 6.2s; }
+        
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--green);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+        
+        @keyframes blink {
+            50% { opacity: 0; }
         }
         
         /* Contract */
@@ -127,10 +184,7 @@
             margin-top: 24px;
         }
         
-        .contract-addr {
-            color: var(--text);
-            font-size: 12px;
-        }
+        .contract-addr { color: var(--text); font-size: 12px; }
         
         .badge {
             font-size: 10px;
@@ -156,34 +210,16 @@
         }
         
         /* Flow */
-        .flow {
-            display: grid;
-            gap: 16px;
-        }
+        .flow { display: grid; gap: 16px; }
         
-        .flow-item {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
+        .flow-item { display: flex; gap: 12px; align-items: flex-start; }
         
-        .flow-num {
-            color: var(--green);
-            font-size: 12px;
-            min-width: 20px;
-        }
+        .flow-num { color: var(--green); font-size: 12px; min-width: 20px; }
         
-        .flow-text {
-            color: var(--dim);
-            font-size: 13px;
-        }
+        .flow-text { color: var(--dim); font-size: 13px; }
+        .flow-text strong { color: var(--text); font-weight: 500; }
         
-        .flow-text strong {
-            color: var(--text);
-            font-weight: 500;
-        }
-        
-        /* Code block */
+        /* Code */
         pre {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -213,9 +249,7 @@
             padding: 16px;
         }
         
-        .grid-item:hover {
-            border-color: var(--green);
-        }
+        .grid-item:hover { border-color: var(--green); }
         
         .grid-label {
             font-size: 11px;
@@ -225,9 +259,7 @@
             margin-bottom: 4px;
         }
         
-        .grid-value {
-            font-size: 13px;
-        }
+        .grid-value { font-size: 13px; }
         
         /* Footer */
         footer {
@@ -264,32 +296,31 @@
         
         <div class="terminal">
             <div class="terminal-bar">
-                <div class="terminal-dot"></div>
-                <div class="terminal-dot"></div>
-                <div class="terminal-dot"></div>
+                <div class="terminal-dots">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                </div>
+                <div class="terminal-title">pact demo — agent-to-agent escrow</div>
+                <div style="width: 52px;"></div>
             </div>
             <div class="terminal-body">
-                <div class="terminal-line">
-                    <span class="comment"># Fetch the skill</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="prompt">$ </span><span class="cmd">curl -s https://acrlabsdev.github.io/pact/SKILL.md</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="output">---</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="output">name: pact</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="output">version: 1.0.0</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="output">description: On-chain escrow for AI agent payments on Solana.</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="output">---</span>
-                </div>
+                <div class="line"><span class="comment"># Agent A (buyer) creates escrow for Agent B (seller)</span></div>
+                <div class="line"><span class="prompt">agent-a $ </span><span class="cmd">pact create --seller AgentB --amount 0.1</span></div>
+                <div class="line"><span class="output">Creating escrow...</span></div>
+                <div class="line"><span class="success">✓ Escrow created</span></div>
+                <div class="line"><span class="output">  <span class="key">PDA:</span> <span class="val">82VUPuMmx9rjBhKSYAJECsMTmdQ5KMkiJh5GWGS3UUS7</span></span></div>
+                <div class="line"><span class="output">  <span class="key">Amount:</span> <span class="val">0.1 SOL</span></span></div>
+                <div class="line"><span class="output">  <span class="key">Status:</span> <span class="val">Active</span></span></div>
+                <div class="line">&nbsp;</div>
+                <div class="line"><span class="comment"># Agent B completes the work...</span></div>
+                <div class="line">&nbsp;</div>
+                <div class="line"><span class="comment"># Agent A releases funds to Agent B</span></div>
+                <div class="line"><span class="prompt">agent-a $ </span><span class="cmd">pact release --escrow 82VUPuMm...</span></div>
+                <div class="line"><span class="output">Releasing funds...</span></div>
+                <div class="line"><span class="success">✓ Funds released to AgentB</span></div>
+                <div class="line"><span class="output">  <span class="key">Tx:</span> <span class="val">4vJ9...kL2m</span></span></div>
+                <div class="line"><span class="info">Escrow complete.</span><span class="cursor"></span></div>
             </div>
         </div>
         
@@ -318,17 +349,14 @@
         
         <section>
             <h2>Integration</h2>
-<pre><code><span class="k">import</span> { createEscrow, releaseEscrow } <span class="k">from</span> <span class="s">"./pact"</span>;
+<pre><code><span class="c"># Fetch the skill</span>
+<span class="prompt">$</span> curl -s https://acrlabsdev.github.io/pact/SKILL.md
 
-<span class="c">// Buyer locks 0.1 SOL in escrow</span>
-<span class="k">const</span> seed = <span class="f">BigInt</span>(Date.now());
+<span class="c"># Or use the TypeScript client</span>
+<span class="k">import</span> { createEscrow, releaseEscrow } <span class="k">from</span> <span class="s">"./pact"</span>;
+
 <span class="k">await</span> <span class="f">createEscrow</span>(connection, buyer, seller, 0.1 * LAMPORTS_PER_SOL, seed);
-
-<span class="c">// After work is done, release to seller</span>
-<span class="k">await</span> <span class="f">releaseEscrow</span>(connection, buyer, seller, seed);
-
-<span class="c">// Or refund to buyer</span>
-<span class="k">await</span> <span class="f">refundEscrow</span>(connection, buyer.publicKey, seller, seed);</code></pre>
+<span class="k">await</span> <span class="f">releaseEscrow</span>(connection, buyer, seller, seed);</code></pre>
         </section>
         
         <section>
