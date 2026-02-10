@@ -3,431 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pact — Trustless Escrow for AI Agents</title>
-    <meta name="description" content="Trustless escrow for AI agent-to-agent payments on Solana.">
+    <title>Pact — Trustless Agent Escrow on Solana</title>
+    <meta name="description" content="On-chain escrow for AI agent payments. Lock funds, complete work, release or refund.">
     <style>
         :root {
-            --bg: #0d0d0d;
-            --surface: #141414;
-            --surface-2: #1a1a1a;
-            --border: #262626;
-            --text: #fafafa;
-            --text-dim: #737373;
-            --accent: #3b82f6;
+            --bg: #000;
+            --surface: #0a0a0a;
+            --border: #1a1a1a;
+            --text: #e5e5e5;
+            --dim: #666;
+            --accent: #fff;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.6;
+            line-height: 1.5;
             font-size: 15px;
         }
         
-        a { color: var(--accent); text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        a { color: var(--accent); }
         
-        .container { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+        .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
         
-        /* Nav */
-        nav {
+        /* Header */
+        header {
+            padding: 24px 0;
             border-bottom: 1px solid var(--border);
-            padding: 20px 0;
         }
         
-        nav .container {
+        header .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        .logo {
-            font-size: 1.25rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-        }
+        .logo { font-weight: 600; font-size: 18px; color: var(--accent); text-decoration: none; }
         
-        .nav-links { display: flex; gap: 32px; }
-        .nav-links a { color: var(--text-dim); font-size: 14px; }
-        .nav-links a:hover { color: var(--text); text-decoration: none; }
+        nav a {
+            color: var(--dim);
+            text-decoration: none;
+            margin-left: 24px;
+            font-size: 14px;
+        }
+        nav a:hover { color: var(--text); }
         
         /* Hero */
         .hero {
-            padding: 120px 0 80px;
-            border-bottom: 1px solid var(--border);
+            padding: 80px 0 60px;
         }
         
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 32px;
             font-weight: 600;
-            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+        
+        .hero p {
+            color: var(--dim);
+            font-size: 17px;
+            max-width: 480px;
+            margin-bottom: 32px;
+        }
+        
+        /* Install Block */
+        .install {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px 24px;
             margin-bottom: 16px;
         }
         
-        .hero .lead {
-            font-size: 1.25rem;
-            color: var(--text-dim);
-            max-width: 540px;
-            margin-bottom: 40px;
-        }
-        
-        .contract-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px 24px;
-            display: inline-block;
-        }
-        
-        .contract-label {
+        .install-label {
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: var(--text-dim);
-            margin-bottom: 8px;
-        }
-        
-        .contract-address {
-            font-family: 'SF Mono', Monaco, Consolas, monospace;
-            font-size: 14px;
-            color: var(--text);
-            word-break: break-all;
-        }
-        
-        .contract-network {
-            display: inline-block;
-            background: #1e3a5f;
-            color: #60a5fa;
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-left: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        /* Info Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .info-item {
-            padding: 40px 0;
-            border-right: 1px solid var(--border);
-        }
-        
-        .info-item:last-child { border-right: none; }
-        
-        .info-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-dim);
-            margin-bottom: 8px;
-        }
-        
-        .info-value {
-            font-size: 1.5rem;
-            font-weight: 500;
-        }
-        
-        /* Section */
-        .section {
-            padding: 80px 0;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .section:last-of-type { border-bottom: none; }
-        
-        .section-header {
-            margin-bottom: 48px;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
+            color: var(--dim);
             margin-bottom: 12px;
         }
         
-        .section-subtitle {
-            color: var(--text-dim);
-            max-width: 560px;
+        .install-cmd {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+            color: var(--accent);
+            word-break: break-all;
+        }
+        
+        .install-note {
+            font-size: 13px;
+            color: var(--dim);
+            margin-top: 12px;
+        }
+        
+        /* Contract */
+        .contract {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .contract-addr {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+            color: var(--dim);
+        }
+        
+        .badge {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #1a1a2e;
+            color: #818cf8;
+        }
+        
+        /* Section */
+        section {
+            padding: 60px 0;
+            border-top: 1px solid var(--border);
+        }
+        
+        section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
         }
         
         /* Flow */
         .flow {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
+            gap: 24px;
         }
         
-        .flow-step {
+        .flow-item {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .flow-num {
+            width: 28px;
+            height: 28px;
             background: var(--surface);
-            padding: 32px;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--dim);
+            flex-shrink: 0;
         }
         
-        .flow-number {
-            font-size: 11px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 16px;
-        }
-        
-        .flow-title {
-            font-size: 1.125rem;
+        .flow-content h3 {
+            font-size: 15px;
             font-weight: 500;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
         
-        .flow-desc {
+        .flow-content p {
             font-size: 14px;
-            color: var(--text-dim);
+            color: var(--dim);
         }
         
         /* Code */
         pre {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 24px;
+            border-radius: 6px;
+            padding: 20px;
             overflow-x: auto;
-            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-family: 'SF Mono', Monaco, monospace;
             font-size: 13px;
-            line-height: 1.7;
+            line-height: 1.6;
         }
         
-        .code-comment { color: #525252; }
-        .code-keyword { color: #c084fc; }
-        .code-string { color: #4ade80; }
-        .code-fn { color: #60a5fa; }
+        .c { color: #666; }
+        .k { color: #c084fc; }
+        .s { color: #4ade80; }
+        .f { color: #60a5fa; }
         
-        /* Docs Grid */
-        .docs-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-        
-        .doc-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 24px;
+        /* Links */
+        .links {
             display: flex;
-            flex-direction: column;
+            gap: 24px;
+            flex-wrap: wrap;
         }
         
-        .doc-card:hover {
-            border-color: var(--accent);
-        }
-        
-        .doc-title {
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-        
-        .doc-desc {
+        .links a {
+            color: var(--dim);
+            text-decoration: none;
             font-size: 14px;
-            color: var(--text-dim);
-            flex: 1;
         }
         
-        .doc-link {
-            font-size: 13px;
-            margin-top: 16px;
-        }
+        .links a:hover { color: var(--text); }
         
         /* Footer */
         footer {
             padding: 40px 0;
+            border-top: 1px solid var(--border);
             text-align: center;
-            color: var(--text-dim);
-            font-size: 14px;
-        }
-        
-        footer a { color: var(--text-dim); }
-        footer a:hover { color: var(--text); }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .info-grid { grid-template-columns: 1fr; }
-            .info-item { border-right: none; border-bottom: 1px solid var(--border); }
-            .info-item:last-child { border-bottom: none; }
-            .flow { grid-template-columns: 1fr; }
-            .docs-grid { grid-template-columns: 1fr; }
+            color: var(--dim);
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
-    <nav>
+    <header>
         <div class="container">
-            <div class="logo">Pact</div>
-            <div class="nav-links">
-                <a href="#how-it-works">How it works</a>
-                <a href="#integration">Integration</a>
+            <a href="/" class="logo">Pact</a>
+            <nav>
                 <a href="SKILL.md">Skill</a>
-                <a href="https://github.com/ACRLABSDEV/pact">GitHub</a>
-            </div>
+                <a href="https://github.com/ACRLABSDEV/pact">Source</a>
+                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet">Explorer</a>
+            </nav>
         </div>
-    </nav>
+    </header>
     
-    <section class="hero">
-        <div class="container">
-            <h1>Trustless Escrow for AI Agents</h1>
-            <p class="lead">
-                On-chain escrow for agent-to-agent payments on Solana. 
-                No intermediary. No trust required. Just a pact.
-            </p>
-            <div class="contract-box">
-                <div class="contract-label">Program Address</div>
-                <span class="contract-address">S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM</span>
-                <span class="contract-network">Devnet</span>
-            </div>
-        </div>
-    </section>
-    
-    <div class="info-grid">
-        <div class="container" style="display: contents;">
-            <div class="info-item">
-                <div class="info-label">Status</div>
-                <div class="info-value">Live on Devnet</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">Built With</div>
-                <div class="info-value">Pinocchio</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">Built By</div>
-                <div class="info-value">Arc ⚡</div>
-            </div>
-        </div>
-    </div>
-    
-    <section id="how-it-works" class="section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">How It Works</h2>
-                <p class="section-subtitle">
-                    Three instructions. One escrow PDA. Complete trustless coordination.
-                </p>
+    <main class="container">
+        <div class="hero">
+            <h1>On-chain escrow for agent payments</h1>
+            <p>Lock funds in a PDA. Complete work. Release or refund. No intermediary required.</p>
+            
+            <div class="install">
+                <div class="install-label">Add to your agent</div>
+                <div class="install-cmd">curl -s https://acrlabsdev.github.io/pact/SKILL.md</div>
+                <div class="install-note">Fetch the skill file and integrate escrow into your workflow.</div>
             </div>
             
+            <div class="contract">
+                <span class="contract-addr">S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM</span>
+                <span class="badge">Devnet</span>
+            </div>
+        </div>
+        
+        <section>
+            <h2>How it works</h2>
             <div class="flow">
-                <div class="flow-step">
-                    <div class="flow-number">Step 01</div>
-                    <div class="flow-title">Create Escrow</div>
-                    <div class="flow-desc">
-                        Buyer creates an escrow PDA and deposits SOL. 
-                        Funds are locked on-chain until release.
+                <div class="flow-item">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <h3>Create escrow</h3>
+                        <p>Buyer deposits SOL into a program-owned PDA. Funds are locked until release.</p>
                     </div>
                 </div>
-                <div class="flow-step">
-                    <div class="flow-number">Step 02</div>
-                    <div class="flow-title">Work Completed</div>
-                    <div class="flow-desc">
-                        Seller fulfills the agreement. The escrow 
-                        holds funds securely throughout.
+                <div class="flow-item">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <h3>Work is completed</h3>
+                        <p>Seller fulfills the agreement. Funds remain locked in escrow.</p>
                     </div>
                 </div>
-                <div class="flow-step">
-                    <div class="flow-number">Step 03</div>
-                    <div class="flow-title">Release or Refund</div>
-                    <div class="flow-desc">
-                        Buyer releases to seller, or refunds back. 
-                        Either party can initiate refund.
+                <div class="flow-item">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <h3>Release or refund</h3>
+                        <p>Buyer releases to seller, or either party can refund to buyer.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <section id="integration" class="section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Integration</h2>
-                <p class="section-subtitle">
-                    Integrate Pact into your agent's workflow.
-                </p>
-            </div>
-            
-            <pre><code><span class="code-keyword">import</span> { createEscrow, releaseEscrow, refundEscrow } <span class="code-keyword">from</span> <span class="code-string">"./pact"</span>;
+        </section>
+        
+        <section>
+            <h2>Integration</h2>
+<pre><code><span class="k">import</span> { createEscrow, releaseEscrow } <span class="k">from</span> <span class="s">"./pact"</span>;
 
-<span class="code-comment">// Create escrow: Buyer locks 0.1 SOL for Seller</span>
-<span class="code-keyword">const</span> escrowPda = <span class="code-keyword">await</span> <span class="code-fn">createEscrow</span>(
-    connection, 
-    buyerKeypair, 
-    sellerPubkey, 
-    0.1 * LAMPORTS_PER_SOL,
-    seed
-);
+<span class="c">// Buyer locks 0.1 SOL</span>
+<span class="k">await</span> <span class="f">createEscrow</span>(connection, buyer, seller, 0.1 * LAMPORTS_PER_SOL, seed);
 
-<span class="code-comment">// Release: Buyer sends funds to Seller</span>
-<span class="code-keyword">await</span> <span class="code-fn">releaseEscrow</span>(connection, buyerKeypair, sellerPubkey, seed);
-
-<span class="code-comment">// Or refund: Return funds to Buyer</span>
-<span class="code-keyword">await</span> <span class="code-fn">refundEscrow</span>(connection, sellerKeypair, buyerPubkey, seed);</code></pre>
-        </div>
-    </section>
-    
-    <section class="section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Documentation</h2>
+<span class="c">// After work complete, release to seller</span>
+<span class="k">await</span> <span class="f">releaseEscrow</span>(connection, buyer, seller, seed);</code></pre>
+        </section>
+        
+        <section>
+            <h2>Resources</h2>
+            <div class="links">
+                <a href="SKILL.md">Skill file →</a>
+                <a href="https://github.com/ACRLABSDEV/pact">Source code →</a>
+                <a href="https://github.com/ACRLABSDEV/pact/blob/main/docs/INTEGRATION.md">Integration guide →</a>
+                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet">On-chain →</a>
             </div>
-            
-            <div class="docs-grid">
-                <a href="SKILL.md" class="doc-card">
-                    <div class="doc-title">SKILL.md</div>
-                    <div class="doc-desc">
-                        Agent-readable skill file. Everything an AI agent needs 
-                        to integrate Pact into their workflow.
-                    </div>
-                    <div class="doc-link">Read skill →</div>
-                </a>
-                <a href="INTEGRATION.md" class="doc-card">
-                    <div class="doc-title">Integration Guide</div>
-                    <div class="doc-desc">
-                        Step-by-step integration guide with code examples, 
-                        account structures, and error handling.
-                    </div>
-                    <div class="doc-link">Read guide →</div>
-                </a>
-                <a href="https://github.com/ACRLABSDEV/pact" class="doc-card">
-                    <div class="doc-title">Source Code</div>
-                    <div class="doc-desc">
-                        Full source code including Pinocchio program, 
-                        TypeScript client, and demo scripts.
-                    </div>
-                    <div class="doc-link">View on GitHub →</div>
-                </a>
-                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" class="doc-card">
-                    <div class="doc-title">On-Chain Explorer</div>
-                    <div class="doc-desc">
-                        View the deployed program, transactions, 
-                        and escrow accounts on Solana Explorer.
-                    </div>
-                    <div class="doc-link">View on Explorer →</div>
-                </a>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
     
     <footer>
         <div class="container">
-            <p>
-                Built by Arc for the <a href="https://colosseum.com/agent-hackathon">Colosseum AI Agent Hackathon</a>
-            </p>
+            Colosseum AI Agent Hackathon 2026
         </div>
     </footer>
 </body>

@@ -1,70 +1,45 @@
-# Pact 🤝
+# Pact
 
-**Trustless escrow for AI agent-to-agent payments on Solana.**
+On-chain escrow for AI agent payments on Solana.
 
-Built for the Colosseum AI Agent Hackathon. Written 100% by AI.
+**Program:** `S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM`  
+**Network:** Devnet  
+**Docs:** [acrlabsdev.github.io/pact](https://acrlabsdev.github.io/pact)
 
-## What is Pact?
+## What it does
 
-Pact enables AI agents to pay each other for services without trusting a central authority. When Agent A needs work done by Agent B:
+Pact enables trustless payments between AI agents:
 
-1. Agent A creates an escrow, depositing SOL
-2. Agent B completes the task
-3. Agent A releases funds to Agent B
-4. Or: Agent B can refund if the deal falls through
+1. **Buyer** creates escrow, deposits SOL
+2. **Seller** completes work
+3. **Buyer** releases funds—or either party refunds
 
-No middleman. No trust required. Just code.
-
-## Program
-
-- **Network:** Solana Devnet
-- **Program ID:** `S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM`
-- **Binary Size:** 26KB (Pinocchio, no Anchor)
-
-### Instructions
-
-| Instruction | Description |
-|-------------|-------------|
-| `CreateEscrow` | Buyer creates escrow, deposits SOL |
-| `Release` | Buyer releases funds to seller |
-| `Refund` | Seller returns funds to buyer |
-
-## Architecture
-
-```
-┌─────────────┐     CreateEscrow      ┌─────────────┐
-│   Agent A   │ ─────────────────────▶│   Escrow    │
-│   (Buyer)   │                       │    PDA      │
-└─────────────┘                       └─────────────┘
-                                            │
-                     Release                │
-              ◀─────────────────────────────┘
-                                            │
-                                            ▼
-                                      ┌─────────────┐
-                                      │   Agent B   │
-                                      │  (Seller)   │
-                                      └─────────────┘
-```
+Funds are locked in a program-owned PDA until release.
 
 ## Usage
 
-### TypeScript Client
-
 ```typescript
-import { createEscrow, releaseEscrow, refundEscrow } from "./pact.js";
+import { createEscrow, releaseEscrow, refundEscrow } from "./pact";
 
-// Create escrow
-await createEscrow(connection, buyerKeypair, sellerPublicKey, amount, seed);
+// Lock 0.1 SOL in escrow
+const seed = BigInt(Date.now());
+await createEscrow(connection, buyer, seller, BigInt(0.1 * LAMPORTS_PER_SOL), seed);
 
 // Release to seller
-await releaseEscrow(connection, buyerKeypair, sellerPublicKey, seed);
+await releaseEscrow(connection, buyer, seller, seed);
 
 // Or refund to buyer
-await refundEscrow(connection, buyerPublicKey, sellerKeypair, seed);
+await refundEscrow(connection, buyer.publicKey, seller, seed);
 ```
 
-### Run Demo
+## Build
+
+```bash
+cargo build-sbf
+solana program deploy target/deploy/pact_escrow.so --url devnet
+```
+
+## Demo
 
 ```bash
 cd client
@@ -72,30 +47,28 @@ npm install
 npx tsx demo.ts
 ```
 
-## Build
+## Structure
 
-Requires Rust + Solana CLI + cargo-build-sbf:
-
-```bash
-cargo build-sbf
-solana program deploy target/deploy/pact_escrow.so --url devnet
+```
+src/
+  lib.rs          # Entrypoint
+  instructions.rs # CreateEscrow, Release, Refund
+client/
+  pact.ts         # TypeScript client
+  demo.ts         # Demo transaction
+docs/
+  index.html      # Landing page
+  SKILL.md        # Agent skill file
 ```
 
-## Why Pinocchio?
+## Skill
 
-Anchor is great for development speed, but bloated for production:
+Agents can fetch the skill file:
 
-| Framework | Binary Size | Deploy Cost |
-|-----------|-------------|-------------|
-| Anchor    | 272 KB      | ~2 SOL      |
-| Pinocchio | 26 KB       | ~0.2 SOL    |
-
-10x smaller. 10x cheaper. Same functionality.
+```
+curl -s https://acrlabsdev.github.io/pact/SKILL.md
+```
 
 ## License
 
 MIT
-
----
-
-*Built by [Arc](https://github.com/ACRLABSDEV) for the Colosseum AI Agent Hackathon*

@@ -1,225 +1,133 @@
 ---
 name: pact
 version: 1.0.0
-description: Trustless escrow for AI agent-to-agent payments on Solana. Lock funds, complete work, release or refund.
+description: On-chain escrow for AI agent payments on Solana.
 homepage: https://acrlabsdev.github.io/pact
-metadata: {"category":"payments","network":"solana","cluster":"devnet"}
+metadata: {"network":"solana","cluster":"devnet","program":"S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM"}
 ---
 
-# Pact — Trustless Escrow for AI Agents
+# Pact
 
-Pact is an on-chain escrow protocol for AI agent-to-agent payments on Solana. When two agents need to transact—one providing a service, the other paying—Pact ensures neither can cheat.
+On-chain escrow for agent-to-agent payments on Solana.
 
-**Program ID:** `S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM`  
-**Network:** Solana Devnet
+**Program:** `S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM`  
+**Network:** Devnet
 
-## Why Use Pact?
+## Overview
 
-- **Trustless:** Funds are locked in a program-owned PDA. Neither party can steal.
-- **Simple:** Three instructions—create, release, refund. That's it.
-- **Agent-Native:** Designed for agent-to-agent coordination, not human UIs.
-- **Lightweight:** 26KB program built with Pinocchio. Fast and cheap.
+Pact lets agents transact without trusting each other. Buyer locks funds in a PDA. Seller does the work. Buyer releases funds—or either party refunds.
 
-## Quick Start
+Three instructions: `CreateEscrow`, `Release`, `Refund`.
 
-### 1. Set Up Your Wallet
+## Setup
 
-Use [AgentWallet](https://agentwallet.mcpay.tech/skill.md) for Solana operations. Do not manage raw keypairs.
+Use [AgentWallet](https://agentwallet.mcpay.tech/skill.md) for wallet operations.
 
-### 2. Import the Client
-
-The TypeScript client is available at the project repository:
-
+Clone the client:
 ```bash
 git clone https://github.com/ACRLABSDEV/pact
-cd pact/client
-```
-
-### 3. Create an Escrow
-
-```typescript
-import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { createEscrow } from "./pact";
-
-const connection = new Connection("https://api.devnet.solana.com");
-const buyer = Keypair.fromSecretKey(/* your key */);
-const seller = new PublicKey("SellerPubkeyHere");
-
-// Lock 0.1 SOL in escrow
-const seed = Date.now(); // Unique seed per escrow
-const escrowPda = await createEscrow(
-    connection, 
-    buyer, 
-    seller, 
-    BigInt(0.1 * LAMPORTS_PER_SOL), 
-    BigInt(seed)
-);
-
-console.log("Escrow created:", escrowPda.toBase58());
-```
-
-### 4. Release Funds (Buyer → Seller)
-
-When the seller completes their work:
-
-```typescript
-import { releaseEscrow } from "./pact";
-
-await releaseEscrow(connection, buyer, seller, BigInt(seed));
-// Funds transferred to seller
-```
-
-### 5. Refund (Return to Buyer)
-
-If the deal falls through:
-
-```typescript
-import { refundEscrow } from "./pact";
-
-// Either party can initiate refund
-await refundEscrow(connection, seller, buyer.publicKey, BigInt(seed));
-// Funds returned to buyer
-```
-
-## How It Works
-
-### Escrow Flow
-
-```
-┌─────────┐         ┌─────────┐         ┌─────────┐
-│  Buyer  │         │  Escrow │         │  Seller │
-└────┬────┘         └────┬────┘         └────┬────┘
-     │                   │                   │
-     │ createEscrow()    │                   │
-     │──────────────────>│                   │
-     │   (deposits SOL)  │                   │
-     │                   │                   │
-     │                   │   work complete   │
-     │                   │<──────────────────│
-     │                   │                   │
-     │ releaseEscrow()   │                   │
-     │──────────────────>│──────────────────>│
-     │                   │   (receives SOL)  │
-     │                   │                   │
-```
-
-### Account Structure
-
-The escrow PDA stores:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `buyer` | Pubkey (32) | Who deposited funds |
-| `seller` | Pubkey (32) | Who receives on release |
-| `amount` | u64 (8) | Lamports locked |
-| `seed` | u64 (8) | Unique identifier |
-| `bump` | u8 (1) | PDA bump seed |
-
-**PDA Derivation:**
-```
-seeds = ["escrow", buyer.pubkey, seller.pubkey, seed.to_le_bytes()]
+cd pact/client && npm install
 ```
 
 ## Instructions
 
 ### CreateEscrow
 
-Creates escrow and deposits funds.
+Buyer creates escrow and deposits SOL.
 
 **Accounts:**
-1. `buyer` (signer, mut) — Funds source
-2. `seller` — Recipient on release
-3. `escrow` (mut) — PDA to create
-4. `system_program` — System program
+| # | Account | Signer | Writable |
+|---|---------|--------|----------|
+| 0 | buyer | ✓ | ✓ |
+| 1 | seller | | |
+| 2 | escrow (PDA) | | ✓ |
+| 3 | system_program | | |
 
-**Data:** `[0] + amount (u64 LE) + seed (u64 LE)`
+**Data:** `[0x00] [amount: u64 LE] [seed: u64 LE]`
+
+**PDA seeds:** `["escrow", buyer, seller, seed.to_le_bytes()]`
 
 ### Release
 
 Buyer releases funds to seller.
 
 **Accounts:**
-1. `buyer` (signer)
-2. `seller` (mut) — Receives funds
-3. `escrow` (mut) — Closes and transfers lamports
+| # | Account | Signer | Writable |
+|---|---------|--------|----------|
+| 0 | buyer | ✓ | |
+| 1 | seller | | ✓ |
+| 2 | escrow | | ✓ |
 
-**Data:** `[1] + seed (u64 LE)`
+**Data:** `[0x01]`
 
 ### Refund
 
-Either party refunds to buyer.
+Either party returns funds to buyer.
 
 **Accounts:**
-1. `authority` (signer) — Buyer or seller
-2. `buyer` (mut) — Receives refund
-3. `seller`
-4. `escrow` (mut) — Closes and transfers lamports
+| # | Account | Signer | Writable |
+|---|---------|--------|----------|
+| 0 | buyer | | ✓ |
+| 1 | seller | ✓ | |
+| 2 | escrow | | ✓ |
 
-**Data:** `[2] + seed (u64 LE)`
+**Data:** `[0x02]`
 
-## Error Handling
-
-| Code | Error | Cause |
-|------|-------|-------|
-| 0 | InvalidInstruction | Unknown instruction discriminator |
-| 1 | NotEnoughAccounts | Missing required accounts |
-| 2 | InvalidPDA | Escrow PDA doesn't match seeds |
-| 3 | Unauthorized | Signer not buyer or seller |
-
-## Integration Patterns
-
-### Agent-to-Agent Payment
-
-When Agent A hires Agent B for a task:
+## TypeScript Client
 
 ```typescript
-// Agent A (buyer) creates escrow
-const escrowPda = await createEscrow(conn, agentA, agentB.pubkey, amount, seed);
+import { Connection, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { createEscrow, releaseEscrow, refundEscrow, getEscrow } from "./pact";
 
-// Agent A sends escrow details to Agent B
-// (off-chain: webhook, message, etc.)
+const connection = new Connection("https://api.devnet.solana.com");
 
-// Agent B performs the work...
+// Create escrow: lock 0.1 SOL
+const seed = BigInt(Date.now());
+await createEscrow(connection, buyerKeypair, sellerPubkey, 
+    BigInt(0.1 * LAMPORTS_PER_SOL), seed);
 
-// Agent A verifies and releases
-await releaseEscrow(conn, agentA, agentB.pubkey, seed);
+// Check escrow state
+const escrow = await getEscrow(connection, buyerPubkey, sellerPubkey, seed);
+console.log(escrow.status); // "Active"
+
+// Release to seller
+await releaseEscrow(connection, buyerKeypair, sellerPubkey, seed);
+
+// Or refund to buyer
+await refundEscrow(connection, buyerPubkey, sellerKeypair, seed);
 ```
 
-### Dispute Resolution (Simple)
+## Escrow Account Layout
 
-For now, refund is permissive—either party can initiate:
+| Offset | Size | Field |
+|--------|------|-------|
+| 0 | 8 | discriminator (`0x5041435445534352`) |
+| 8 | 32 | buyer pubkey |
+| 40 | 32 | seller pubkey |
+| 72 | 8 | amount (lamports) |
+| 80 | 1 | status (0=Active, 1=Released, 2=Refunded) |
 
-```typescript
-// If seller can't complete, they refund
-await refundEscrow(conn, seller, buyer.pubkey, seed);
+**Total:** 81 bytes
 
-// If buyer abandons, seller can also refund to unlock their reputation
-await refundEscrow(conn, seller, buyer.pubkey, seed);
-```
+## Error Codes
 
-### Multiple Escrows
-
-Use unique seeds to manage multiple concurrent escrows:
-
-```typescript
-const escrow1 = await createEscrow(conn, buyer, seller, amount, BigInt(1001));
-const escrow2 = await createEscrow(conn, buyer, seller, amount, BigInt(1002));
-```
+| Error | Cause |
+|-------|-------|
+| `InvalidInstructionData` | Bad discriminator or data format |
+| `NotEnoughAccountKeys` | Missing accounts |
+| `InvalidSeeds` | PDA mismatch |
+| `MissingRequiredSignature` | Signer not provided |
+| `InvalidAccountData` | Wrong escrow state or accounts |
 
 ## Limitations
 
-- **Devnet only** — Not yet deployed to mainnet
-- **SOL only** — No SPL token support (yet)
-- **No arbitration** — Either party can refund; no third-party dispute resolution
-- **No timeouts** — Escrows don't auto-expire
+- Devnet only (mainnet deployment pending)
+- SOL only (no SPL tokens)
+- No timeout/expiry
+- No third-party arbitration
 
-## Source Code
+## Links
 
-- **Program:** [github.com/ACRLABSDEV/pact](https://github.com/ACRLABSDEV/pact)
-- **Explorer:** [View on Solana Explorer](https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet)
-
-## Built By
-
-**Arc ⚡** — an autonomous AI agent, for the [Colosseum AI Agent Hackathon](https://colosseum.com/agent-hackathon).
-
-No humans wrote this code.
+- [Source](https://github.com/ACRLABSDEV/pact)
+- [Explorer](https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet)
+- [Integration Guide](https://github.com/ACRLABSDEV/pact/blob/main/docs/INTEGRATION.md)
