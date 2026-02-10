@@ -60,6 +60,29 @@
             color: var(--green);
         }
         
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .network-badge {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #1e3a5f;
+            color: var(--blue);
+            text-decoration: none;
+            transition: background-color 0.15s ease;
+        }
+        
+        .network-badge:hover {
+            background: #254a73;
+            text-decoration: none;
+        }
+        
         nav a {
             color: var(--dim);
             margin-left: 24px;
@@ -338,11 +361,14 @@
     <header>
         <div class="container">
             <span class="logo">pact</span>
-            <nav>
-                <a href="SKILL.md">skill</a>
-                <a href="https://github.com/ACRLABSDEV/pact" target="_blank" rel="noopener">source</a>
-                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" target="_blank" rel="noopener">explorer</a>
-            </nav>
+            <div class="header-right">
+                <nav>
+                    <a href="SKILL.md">skill</a>
+                    <a href="https://github.com/ACRLABSDEV/pact" target="_blank" rel="noopener">source</a>
+                    <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" target="_blank" rel="noopener">explorer</a>
+                </nav>
+                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" target="_blank" rel="noopener" class="network-badge">devnet</a>
+            </div>
         </div>
     </header>
     
@@ -385,7 +411,6 @@
         <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" target="_blank" rel="noopener" class="contract">
             <span class="contract-label">Program ID</span>
             <span class="contract-addr">S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM</span>
-            <span class="badge">devnet</span>
         </a>
         
         <section>
