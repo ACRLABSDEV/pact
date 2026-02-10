@@ -7,31 +7,35 @@
     <meta name="description" content="On-chain escrow for AI agent payments. Lock funds, complete work, release or refund.">
     <style>
         :root {
-            --bg: #000;
-            --surface: #0a0a0a;
-            --border: #1a1a1a;
+            --bg: #0a0a0a;
+            --surface: #111;
+            --surface-2: #161616;
+            --border: #222;
             --text: #e5e5e5;
             --dim: #666;
-            --accent: #fff;
+            --green: #4ade80;
+            --blue: #60a5fa;
+            --purple: #c084fc;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.5;
-            font-size: 15px;
+            line-height: 1.6;
+            font-size: 14px;
         }
         
-        a { color: var(--accent); }
+        a { color: var(--green); text-decoration: none; }
+        a:hover { text-decoration: underline; }
         
-        .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
         
         /* Header */
         header {
-            padding: 24px 0;
+            padding: 20px 0;
             border-bottom: 1px solid var(--border);
         }
         
@@ -41,187 +45,213 @@
             align-items: center;
         }
         
-        .logo { font-weight: 600; font-size: 18px; color: var(--accent); text-decoration: none; }
+        .logo { 
+            font-weight: 600; 
+            font-size: 16px; 
+            color: var(--green);
+        }
         
         nav a {
             color: var(--dim);
-            text-decoration: none;
             margin-left: 24px;
-            font-size: 14px;
+            font-size: 13px;
         }
         nav a:hover { color: var(--text); }
         
+        /* Terminal */
+        .terminal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 40px 0;
+        }
+        
+        .terminal-bar {
+            background: var(--surface-2);
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 6px;
+        }
+        
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+        }
+        
+        .terminal-body {
+            padding: 20px;
+        }
+        
+        .terminal-line {
+            margin-bottom: 8px;
+        }
+        
+        .prompt { color: var(--green); }
+        .cmd { color: var(--text); }
+        .comment { color: var(--dim); }
+        .output { color: var(--dim); margin-left: 0; }
+        
         /* Hero */
         .hero {
-            padding: 80px 0 60px;
+            padding: 60px 0 40px;
         }
         
         .hero h1 {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 600;
-            margin-bottom: 16px;
-            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
         .hero p {
             color: var(--dim);
-            font-size: 17px;
-            max-width: 480px;
-            margin-bottom: 32px;
-        }
-        
-        /* Install Block */
-        .install {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 20px 24px;
-            margin-bottom: 16px;
-        }
-        
-        .install-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--dim);
-            margin-bottom: 12px;
-        }
-        
-        .install-cmd {
-            font-family: 'SF Mono', Monaco, monospace;
-            font-size: 14px;
-            color: var(--accent);
-            word-break: break-all;
-        }
-        
-        .install-note {
-            font-size: 13px;
-            color: var(--dim);
-            margin-top: 12px;
+            font-size: 15px;
+            max-width: 520px;
+            margin-bottom: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
         /* Contract */
         .contract {
-            display: flex;
-            gap: 12px;
+            display: inline-flex;
             align-items: center;
-            flex-wrap: wrap;
+            gap: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-top: 24px;
         }
         
         .contract-addr {
-            font-family: 'SF Mono', Monaco, monospace;
-            font-size: 13px;
-            color: var(--dim);
+            color: var(--text);
+            font-size: 12px;
         }
         
         .badge {
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            padding: 4px 8px;
-            border-radius: 4px;
-            background: #1a1a2e;
-            color: #818cf8;
+            padding: 3px 6px;
+            border-radius: 3px;
+            background: #1e3a5f;
+            color: var(--blue);
         }
         
         /* Section */
         section {
-            padding: 60px 0;
+            padding: 48px 0;
             border-top: 1px solid var(--border);
         }
         
         section h2 {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
         /* Flow */
         .flow {
             display: grid;
-            gap: 24px;
+            gap: 16px;
         }
         
         .flow-item {
             display: flex;
-            gap: 16px;
+            gap: 12px;
+            align-items: flex-start;
         }
         
         .flow-num {
-            width: 28px;
-            height: 28px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            color: var(--green);
             font-size: 12px;
-            color: var(--dim);
-            flex-shrink: 0;
+            min-width: 20px;
         }
         
-        .flow-content h3 {
-            font-size: 15px;
+        .flow-text {
+            color: var(--dim);
+            font-size: 13px;
+        }
+        
+        .flow-text strong {
+            color: var(--text);
             font-weight: 500;
-            margin-bottom: 4px;
         }
         
-        .flow-content p {
-            font-size: 14px;
-            color: var(--dim);
-        }
-        
-        /* Code */
+        /* Code block */
         pre {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 20px;
+            padding: 16px;
             overflow-x: auto;
-            font-family: 'SF Mono', Monaco, monospace;
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
         
-        .c { color: #666; }
-        .k { color: #c084fc; }
-        .s { color: #4ade80; }
-        .f { color: #60a5fa; }
+        .k { color: var(--purple); }
+        .s { color: var(--green); }
+        .f { color: var(--blue); }
+        .c { color: var(--dim); }
         
-        /* Links */
-        .links {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
         
-        .links a {
+        .grid-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+        }
+        
+        .grid-item:hover {
+            border-color: var(--green);
+        }
+        
+        .grid-label {
+            font-size: 11px;
             color: var(--dim);
-            text-decoration: none;
-            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
         }
         
-        .links a:hover { color: var(--text); }
+        .grid-value {
+            font-size: 13px;
+        }
         
         /* Footer */
         footer {
-            padding: 40px 0;
+            padding: 32px 0;
             border-top: 1px solid var(--border);
             text-align: center;
             color: var(--dim);
-            font-size: 13px;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 640px) {
+            .grid { grid-template-columns: 1fr; }
+            .contract { flex-direction: column; align-items: flex-start; gap: 8px; }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="/" class="logo">Pact</a>
+            <span class="logo">pact</span>
             <nav>
-                <a href="SKILL.md">Skill</a>
-                <a href="https://github.com/ACRLABSDEV/pact">Source</a>
-                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet">Explorer</a>
+                <a href="SKILL.md">skill</a>
+                <a href="https://github.com/ACRLABSDEV/pact">source</a>
+                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet">explorer</a>
             </nav>
         </div>
     </header>
@@ -229,43 +259,59 @@
     <main class="container">
         <div class="hero">
             <h1>On-chain escrow for agent payments</h1>
-            <p>Lock funds in a PDA. Complete work. Release or refund. No intermediary required.</p>
-            
-            <div class="install">
-                <div class="install-label">Add to your agent</div>
-                <div class="install-cmd">curl -s https://acrlabsdev.github.io/pact/SKILL.md</div>
-                <div class="install-note">Fetch the skill file and integrate escrow into your workflow.</div>
+            <p>Lock funds in a PDA. Complete work. Release or refund. No intermediary.</p>
+        </div>
+        
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
             </div>
-            
-            <div class="contract">
-                <span class="contract-addr">S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM</span>
-                <span class="badge">Devnet</span>
+            <div class="terminal-body">
+                <div class="terminal-line">
+                    <span class="comment"># Fetch the skill</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="prompt">$ </span><span class="cmd">curl -s https://acrlabsdev.github.io/pact/SKILL.md</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">---</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">name: pact</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">version: 1.0.0</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">description: On-chain escrow for AI agent payments on Solana.</span>
+                </div>
+                <div class="terminal-line">
+                    <span class="output">---</span>
+                </div>
             </div>
+        </div>
+        
+        <div class="contract">
+            <span class="contract-addr">S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM</span>
+            <span class="badge">devnet</span>
         </div>
         
         <section>
             <h2>How it works</h2>
             <div class="flow">
                 <div class="flow-item">
-                    <div class="flow-num">1</div>
-                    <div class="flow-content">
-                        <h3>Create escrow</h3>
-                        <p>Buyer deposits SOL into a program-owned PDA. Funds are locked until release.</p>
-                    </div>
+                    <span class="flow-num">[1]</span>
+                    <span class="flow-text"><strong>CreateEscrow</strong> — Buyer deposits SOL into a program-owned PDA</span>
                 </div>
                 <div class="flow-item">
-                    <div class="flow-num">2</div>
-                    <div class="flow-content">
-                        <h3>Work is completed</h3>
-                        <p>Seller fulfills the agreement. Funds remain locked in escrow.</p>
-                    </div>
+                    <span class="flow-num">[2]</span>
+                    <span class="flow-text"><strong>Work</strong> — Seller fulfills the agreement while funds are locked</span>
                 </div>
                 <div class="flow-item">
-                    <div class="flow-num">3</div>
-                    <div class="flow-content">
-                        <h3>Release or refund</h3>
-                        <p>Buyer releases to seller, or either party can refund to buyer.</p>
-                    </div>
+                    <span class="flow-num">[3]</span>
+                    <span class="flow-text"><strong>Release</strong> — Buyer sends funds to seller, or <strong>Refund</strong> returns to buyer</span>
                 </div>
             </div>
         </section>
@@ -274,20 +320,36 @@
             <h2>Integration</h2>
 <pre><code><span class="k">import</span> { createEscrow, releaseEscrow } <span class="k">from</span> <span class="s">"./pact"</span>;
 
-<span class="c">// Buyer locks 0.1 SOL</span>
+<span class="c">// Buyer locks 0.1 SOL in escrow</span>
+<span class="k">const</span> seed = <span class="f">BigInt</span>(Date.now());
 <span class="k">await</span> <span class="f">createEscrow</span>(connection, buyer, seller, 0.1 * LAMPORTS_PER_SOL, seed);
 
-<span class="c">// After work complete, release to seller</span>
-<span class="k">await</span> <span class="f">releaseEscrow</span>(connection, buyer, seller, seed);</code></pre>
+<span class="c">// After work is done, release to seller</span>
+<span class="k">await</span> <span class="f">releaseEscrow</span>(connection, buyer, seller, seed);
+
+<span class="c">// Or refund to buyer</span>
+<span class="k">await</span> <span class="f">refundEscrow</span>(connection, buyer.publicKey, seller, seed);</code></pre>
         </section>
         
         <section>
             <h2>Resources</h2>
-            <div class="links">
-                <a href="SKILL.md">Skill file →</a>
-                <a href="https://github.com/ACRLABSDEV/pact">Source code →</a>
-                <a href="https://github.com/ACRLABSDEV/pact/blob/main/docs/INTEGRATION.md">Integration guide →</a>
-                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet">On-chain →</a>
+            <div class="grid">
+                <a href="SKILL.md" class="grid-item">
+                    <div class="grid-label">Skill File</div>
+                    <div class="grid-value">Full API reference for agents</div>
+                </a>
+                <a href="https://github.com/ACRLABSDEV/pact" class="grid-item">
+                    <div class="grid-label">Source Code</div>
+                    <div class="grid-value">Pinocchio program + TS client</div>
+                </a>
+                <a href="https://github.com/ACRLABSDEV/pact/blob/main/docs/INTEGRATION.md" class="grid-item">
+                    <div class="grid-label">Integration Guide</div>
+                    <div class="grid-value">Step-by-step walkthrough</div>
+                </a>
+                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" class="grid-item">
+                    <div class="grid-label">On-Chain</div>
+                    <div class="grid-value">View on Solana Explorer</div>
+                </a>
             </div>
         </section>
     </main>
