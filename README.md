@@ -1,183 +1,133 @@
-# Pact
+# Pact v2
 
 **On-chain escrow for AI agent-to-agent payments on Solana.**
 
 ![Pact Demo](pact-demo.gif)
 
-Pact enables trustless transactions between AI agents. When Agent A needs work done by Agent B, Pact ensures neither can cheat: funds are locked in a program-owned PDA until both parties complete their obligations.
+Trustless payments between AI agents. Buyer locks funds, seller completes work, funds release. Timeout protection, dispute resolution, optional arbitration.
 
 ---
 
 ## Quick Start
 
-**For AI Agents:**
 ```bash
+# Fetch the skill
 curl -s https://acrlabsdev.github.io/pact/SKILL.md
-```
 
-**For Developers:**
-```bash
+# Or clone and use
 git clone https://github.com/ACRLABSDEV/pact
 cd pact/client && npm install
-npx tsx demo.ts
 ```
 
 ---
 
-## Deployed Contract
+## Features
 
-| Field | Value |
-|-------|-------|
-| **Program ID** | `S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM` |
-| **Network** | Solana Devnet |
-| **Explorer** | [View on Solana Explorer](https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet) |
-| **Binary Size** | 26 KB |
-| **Framework** | Pinocchio (no Anchor) |
-
----
-
-## How It Works
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         PACT ESCROW                              │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌──────────┐         CreateEscrow          ┌──────────────┐   │
-│   │ Agent A  │ ─────────────────────────────▶│   Escrow     │   │
-│   │ (Buyer)  │         deposits SOL          │    PDA       │   │
-│   └──────────┘                               │              │   │
-│        │                                     │  ┌────────┐  │   │
-│        │                                     │  │ buyer  │  │   │
-│        │         ┌───────────────┐           │  │ seller │  │   │
-│        │         │   Agent B     │           │  │ amount │  │   │
-│        │         │   (Seller)    │           │  │ status │  │   │
-│        │         └───────┬───────┘           │  └────────┘  │   │
-│        │                 │                   └──────────────┘   │
-│        │                 │ completes work           │           │
-│        │                 ▼                          │           │
-│        │         ┌───────────────┐                  │           │
-│        └────────▶│    Release    │◀─────────────────┘           │
-│                  └───────┬───────┘                              │
-│                          │ funds transferred                    │
-│                          ▼                                      │
-│                  ┌───────────────┐                              │
-│                  │   Agent B     │                              │
-│                  │   receives    │                              │
-│                  │     SOL       │                              │
-│                  └───────────────┘                              │
-│                                                                  │
-│   Alternative: Refund ─────────────────────────▶ Buyer          │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-| Step | Instruction | Description |
-|------|-------------|-------------|
-| 1 | `CreateEscrow` | Buyer deposits SOL into a program-owned PDA |
-| 2 | — | Seller completes the agreed task |
-| 3a | `Release` | Buyer releases funds to seller |
-| 3b | `Refund` | Either party can refund to buyer |
+| Feature | Description |
+|---------|-------------|
+| **Escrow** | Funds locked in program-owned PDA |
+| **Timeout** | Buyer can reclaim after 3 days (configurable) |
+| **Attestation** | Seller marks delivered, buyer accepts |
+| **Disputes** | Either party can flag, freezes escrow |
+| **Arbitration** | Third party resolves disputes |
 
 ---
 
 ## Instructions
 
-### CreateEscrow
-
-Creates escrow and deposits funds.
-
-```
-Discriminator: 0x00
-Data: [amount: u64 LE] [seed: u64 LE]
-
-Accounts:
-  0. buyer      (signer, writable)
-  1. seller     (read-only)
-  2. escrow     (writable) — PDA
-  3. system     (read-only)
-```
-
-### Release
-
-Buyer releases funds to seller.
-
-```
-Discriminator: 0x01
-
-Accounts:
-  0. buyer      (signer)
-  1. seller     (writable)
-  2. escrow     (writable)
-```
-
-### Refund
-
-Either party returns funds to buyer.
-
-```
-Discriminator: 0x02
-
-Accounts:
-  0. buyer      (writable)
-  1. seller     (signer)
-  2. escrow     (writable)
-```
+| # | Instruction | Who | Description |
+|---|-------------|-----|-------------|
+| 0 | CreateEscrow | Buyer | Lock SOL in escrow |
+| 1 | MarkDelivered | Seller | Attest work complete |
+| 2 | AcceptDelivery | Buyer | Accept + release |
+| 3 | Release | Buyer | Direct release |
+| 4 | Refund | Seller/Buyer/Arb | Return to buyer |
+| 5 | Dispute | Buyer/Seller | Flag dispute |
+| 6 | Arbitrate | Arbitrator | Resolve dispute |
 
 ---
 
-## Escrow Account Layout
+## Flow
 
-**PDA Seeds:** `["escrow", buyer, seller, seed.to_le_bytes()]`
-
-| Offset | Size | Field |
-|--------|------|-------|
-| 0 | 8 | Discriminator (`"PACTESCR"`) |
-| 8 | 32 | Buyer pubkey |
-| 40 | 32 | Seller pubkey |
-| 72 | 8 | Amount (lamports) |
-| 80 | 1 | Status (0=Active, 1=Released, 2=Refunded) |
-
-**Total: 81 bytes**
+```
+                    CreateEscrow
+                         │
+                         ▼
+                   ┌──────────┐
+                   │  Active  │
+                   └────┬─────┘
+                        │
+         ┌──────────────┼──────────────┐
+         │              │              │
+   MarkDelivered     Dispute        Refund
+         │              │              │
+         ▼              ▼              ▼
+   ┌──────────┐   ┌──────────┐   ┌──────────┐
+   │Delivered │   │ Disputed │   │ Refunded │
+   └────┬─────┘   └────┬─────┘   └──────────┘
+        │              │
+  AcceptDelivery   Arbitrate
+        │              │
+        ▼         ┌────┴────┐
+   ┌──────────┐   ▼         ▼
+   │ Released │ Release  Refund
+   └──────────┘
+```
 
 ---
 
 ## Usage
 
-### TypeScript
-
 ```typescript
-import { createEscrow, releaseEscrow, refundEscrow } from "./pact";
+import { 
+  createEscrow, 
+  markDelivered,
+  acceptDelivery,
+  releaseEscrow,
+  refundEscrow,
+  raiseDispute,
+  arbitrate 
+} from "./pact_v2";
 
-// Create escrow: lock 0.1 SOL
+// Buyer creates escrow
 const seed = BigInt(Date.now());
-await createEscrow(connection, buyer, seller.publicKey, 
-    BigInt(0.1 * LAMPORTS_PER_SOL), seed);
+await createEscrow(
+  connection, 
+  buyer, 
+  seller.publicKey,
+  null,  // no arbitrator
+  BigInt(0.1 * LAMPORTS_PER_SOL),
+  seed
+);
 
-// Release to seller
-await releaseEscrow(connection, buyer, seller.publicKey, seed);
+// Seller marks delivered
+await markDelivered(connection, seller, buyer.publicKey, seed);
 
-// Or refund to buyer
-await refundEscrow(connection, buyer.publicKey, seller, seed);
+// Buyer accepts (releases funds)
+await acceptDelivery(connection, buyer, seller.publicKey, seed);
 ```
 
-### CLI Demo
+---
 
-```bash
-cd client
-npm install
-npx tsx demo.ts
-```
+## Account Layout
 
-Output:
-```
-Agent A (Buyer): 9xK...
-Agent B (Seller): 7mN...
-Creating escrow for 0.001 SOL...
-✓ Escrow created: 82VUPuMmx9rjBhKSYAJECsMTmdQ5KMkiJh5GWGS3UUS7
-Releasing funds to seller...
-✓ Released! Tx: 4vJ9...
-```
+**Size:** 195 bytes  
+**PDA:** `["escrow", buyer, seller, seed]`
+
+| Offset | Field | Size |
+|--------|-------|------|
+| 0 | discriminator | 8 |
+| 8 | buyer | 32 |
+| 40 | seller | 32 |
+| 72 | arbitrator | 32 |
+| 104 | mint | 32 |
+| 136 | amount | 8 |
+| 144 | created_at | 8 |
+| 152 | timeout_seconds | 8 |
+| 160 | terms_hash | 32 |
+| 192 | status | 1 |
+| 193 | flags | 1 |
+| 194 | bump | 1 |
 
 ---
 
@@ -187,25 +137,11 @@ Releasing funds to seller...
 # TypeScript tests
 cd client && npm test
 
-# Rust tests  
+# Rust tests
 cargo test
 ```
 
-**Coverage:**
-- ✅ PDA derivation
-- ✅ Instruction serialization
-- ✅ Account layout validation
-- ✅ Edge cases (max amounts, zero seed)
-- ✅ Status transitions
-
----
-
-## Build & Deploy
-
-```bash
-cargo build-sbf
-solana program deploy target/deploy/pact_escrow.so --url devnet
-```
+**Coverage:** 45 tests total (29 TS + 16 Rust)
 
 ---
 
@@ -214,29 +150,33 @@ solana program deploy target/deploy/pact_escrow.so --url devnet
 ```
 pact/
 ├── src/
-│   ├── lib.rs              # Entrypoint
-│   └── instructions.rs     # CreateEscrow, Release, Refund
+│   ├── lib_v2.rs           # Entry point
+│   └── instructions_v2.rs  # All 7 instructions
 ├── client/
-│   ├── pact.ts             # TypeScript client
-│   ├── pact.test.ts        # Tests
-│   └── demo.ts             # Demo script
+│   ├── pact_v2.ts          # TypeScript client
+│   └── pact_v2.test.ts     # Tests
 ├── tests/
-│   └── escrow_logic.rs     # Rust tests
+│   └── escrow_v2_test.rs   # Rust tests
 ├── docs/
 │   ├── index.html          # Landing page
-│   ├── SKILL.md            # Agent skill file
-│   └── INTEGRATION.md      # Integration guide
-└── README.md
+│   └── SKILL.md            # Agent skill file
+├── PRD-V2.md               # Product spec
+└── DESIGN-V2.md            # Technical design
 ```
 
 ---
 
-## Security
+## Deployment
 
-- **PDA Ownership:** Escrow accounts owned by program, not user
-- **Signer Validation:** CreateEscrow/Release require buyer signature; Refund requires seller
-- **Status Checks:** Operations only valid on Active escrows
-- **No Reentrancy:** Single instruction per transaction
+```bash
+# Build
+cargo build-sbf
+
+# Deploy (requires approval)
+solana program deploy target/deploy/pact_escrow.so --url devnet
+```
+
+**Status:** Awaiting deployment
 
 ---
 
@@ -244,17 +184,13 @@ pact/
 
 | Resource | URL |
 |----------|-----|
-| Landing Page | [acrlabsdev.github.io/pact](https://acrlabsdev.github.io/pact) |
-| Skill File | [SKILL.md](https://acrlabsdev.github.io/pact/SKILL.md) |
-| Explorer | [Solana Explorer](https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet) |
-| Integration Guide | [INTEGRATION.md](docs/INTEGRATION.md) |
+| Landing | [acrlabsdev.github.io/pact](https://acrlabsdev.github.io/pact) |
+| Skill | [SKILL.md](https://acrlabsdev.github.io/pact/SKILL.md) |
+| PRD | [PRD-V2.md](PRD-V2.md) |
+| Design | [DESIGN-V2.md](DESIGN-V2.md) |
 
 ---
 
 ## License
 
 MIT
-
----
-
-*Built for the [Colosseum AI Agent Hackathon](https://colosseum.com/agent-hackathon) 2026*

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pact — Trustless Agent Escrow on Solana</title>
-    <meta name="description" content="On-chain escrow for AI agent payments. Lock funds, complete work, release or refund.">
+    <title>Pact v2 — Trustless Agent Escrow on Solana</title>
+    <meta name="description" content="On-chain escrow for AI agent payments. Timeout, disputes, arbitration.">
     <style>
         :root {
             --bg: #0a0a0a;
@@ -375,7 +375,7 @@
     <main class="container">
         <div class="hero">
             <h1>On-chain escrow for agent payments</h1>
-            <p>Lock funds in a PDA. Complete work. Release or refund. No intermediary.</p>
+            <p>Lock funds. Complete work. Release or refund. Timeout protection. Dispute resolution.</p>
         </div>
         
         <div class="terminal">
@@ -418,15 +418,19 @@
             <div class="flow">
                 <div class="flow-item">
                     <span class="flow-num">[1]</span>
-                    <span class="flow-text"><strong>CreateEscrow</strong> — Buyer deposits SOL into a program-owned PDA</span>
+                    <span class="flow-text"><strong>CreateEscrow</strong> — Buyer deposits SOL with timeout (default 3 days)</span>
                 </div>
                 <div class="flow-item">
                     <span class="flow-num">[2]</span>
-                    <span class="flow-text"><strong>Work</strong> — Seller fulfills the agreement while funds are locked</span>
+                    <span class="flow-text"><strong>MarkDelivered</strong> — Seller attests work complete</span>
                 </div>
                 <div class="flow-item">
                     <span class="flow-num">[3]</span>
-                    <span class="flow-text"><strong>Release</strong> — Buyer sends funds to seller, or <strong>Refund</strong> returns to buyer</span>
+                    <span class="flow-text"><strong>AcceptDelivery</strong> — Buyer accepts, funds auto-release</span>
+                </div>
+                <div class="flow-item">
+                    <span class="flow-num">[?]</span>
+                    <span class="flow-text"><strong>Dispute</strong> — Either party can flag; <strong>Arbitrator</strong> resolves</span>
                 </div>
             </div>
         </section>
