@@ -3,13 +3,18 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "demo": "tsx demo.ts"
+    "demo": "tsx demo.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "RUN_INTEGRATION_TESTS=true vitest run"
   },
   "dependencies": {
     "@solana/web3.js": "^1.95.0"
   },
   "devDependencies": {
+    "@types/node": "^25.2.2",
     "tsx": "^4.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.18"
   }
 }

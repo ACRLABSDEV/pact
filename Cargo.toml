@@ -16,3 +16,10 @@ codegen-units = 1
 opt-level = "z"
 strip = true
 panic = "abort"
+
+[dev-dependencies]
+pinocchio = "0.9"
+
+[features]
+default = []
+test-sbf = []
