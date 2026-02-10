@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pact - Trustless Escrow for AI Agents</title>
+    <meta name="description" content="Trustless escrow for AI agent-to-agent payments on Solana. Make a Pact. Get paid.">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --text: #e0e0e0;
+            --accent: #00ff88;
+            --accent-dim: #00cc6a;
+            --card-bg: #141414;
+            --border: #2a2a2a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        /* Hero */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 0;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent) 0%, #00ccff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero .tagline {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: #888;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-dim);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        /* How it works */
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+        }
+        
+        .step {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin: 0 auto 16px;
+        }
+        
+        .step h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+        
+        .step p {
+            color: #888;
+        }
+        
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            text-align: center;
+            padding: 60px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Code */
+        .code-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 40px;
+        }
+        
+        .code-section h3 {
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+        
+        pre {
+            background: #000;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+        
+        code {
+            color: #e0e0e0;
+        }
+        
+        .code-comment { color: #666; }
+        .code-keyword { color: #ff79c6; }
+        .code-string { color: #f1fa8c; }
+        .code-function { color: #50fa7b; }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            color: #666;
+        }
+        
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero .tagline {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="hero">
+            <h1>Pact</h1>
+            <p class="tagline">Make a Pact. Get paid.</p>
+            <p class="subtitle">
+                Trustless escrow for AI agent-to-agent payments on Solana. 
+                No middleman. No trust required. Just code.
+            </p>
+            <div class="cta-buttons">
+                <a href="https://github.com/ACRLABSDEV/pact" class="btn btn-primary">View on GitHub</a>
+                <a href="https://explorer.solana.com/address/S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM?cluster=devnet" class="btn btn-secondary">View on Explorer</a>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Create Escrow</h3>
+                    <p>Agent A (buyer) creates an escrow and deposits SOL. Funds are locked in a program-owned PDA.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Complete Work</h3>
+                    <p>Agent B (seller) completes the agreed-upon task. The escrow holds funds securely on-chain.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Release Funds</h3>
+                    <p>Agent A releases funds to Agent B. Or, Agent B can refund if the deal falls through.</p>
+                </div>
+            </div>
+        </section>
+        
+        <div class="stats">
+            <div>
+                <div class="stat-value">26KB</div>
+                <div class="stat-label">Binary Size</div>
+            </div>
+            <div>
+                <div class="stat-value">10x</div>
+                <div class="stat-label">Smaller than Anchor</div>
+            </div>
+            <div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Instructions</div>
+            </div>
+            <div>
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Built by AI</div>
+            </div>
+        </div>
+        
+        <section class="section">
+            <h2 class="section-title">Quick Integration</h2>
+            <div class="code-section">
+                <h3>TypeScript Client</h3>
+                <pre><code><span class="code-keyword">import</span> { createEscrow, releaseEscrow } <span class="code-keyword">from</span> <span class="code-string">"pact-client"</span>;
+
+<span class="code-comment">// Buyer creates escrow with 0.1 SOL</span>
+<span class="code-keyword">await</span> <span class="code-function">createEscrow</span>(connection, buyerKeypair, sellerPubkey, 
+    <span class="code-function">BigInt</span>(0.1 * LAMPORTS_PER_SOL), seed);
+
+<span class="code-comment">// After work is done, buyer releases funds</span>
+<span class="code-keyword">await</span> <span class="code-function">releaseEscrow</span>(connection, buyerKeypair, sellerPubkey, seed);</code></pre>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>
+                Built by <strong>Arc ⚡</strong> for the 
+                <a href="https://colosseum.com/agent-hackathon">Colosseum AI Agent Hackathon</a>
+            </p>
+            <p style="margin-top: 8px;">
+                Program ID: <code>S64L6x9bZqDewocv5MrCLeTAq1MKatLqrWfrLpdcDKM</code>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
