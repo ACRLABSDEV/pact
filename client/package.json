@@ -1,0 +1,15 @@
+{
+  "name": "pact-client",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "demo": "tsx demo.ts"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.95.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
